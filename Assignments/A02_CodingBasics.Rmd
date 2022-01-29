@@ -1,6 +1,6 @@
 ---
 title: "Assignment 2: Coding Basics"
-author: "Student Name"
+author: "Langston Alexander"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -33,9 +33,18 @@ This exercise accompanies the lessons in Environmental Data Analytics on coding 
 ```{r}
 #1. 
 
-#2. 
+sequencebyfour <- seq(1,100,4) #creating the sequence
+sequencebyfour #printing that sequence
+
+#2.
+mean_sequencebyfour <- mean(sequencebyfour) #pulling the mean of the sequence and assigning it to a variable
+median_sequencebyfour <- median(sequencebyfour) #pulling the median of the sequence and assigning it to a variable
+
+mean_sequencebyfour #printing the mean and median variables
+median_sequencebyfour
 
 #3. 
+mean_sequencebyfour>median_sequencebyfour #Checking if the mean is greater than the median. Returns false for anything other than if the mean is greater.
 
 ```
 
@@ -50,12 +59,19 @@ This exercise accompanies the lessons in Environmental Data Analytics on coding 
 8. Label the columns of your data frame with informative titles.
 
 ```{r}
+students <- c('Lorelai', 'Rory', 'Lane', 'Luke') #character vector
+scores <- c(84, 98, 51, 48) # double vector
+pass<- c(TRUE, TRUE, TRUE, FALSE) #logical vector
+
+testresults <-data.frame(students, scores, pass) #combining vectors into a df
+
+colnames(testresults) <- c("Student Name", "Test Score", "Did They Pass?") #renaming the columns in the df
 
 ```
 
 9. QUESTION: How is this data frame different from a matrix?
 
-> Answer: 
+> Answer: Matrices can only hold a single data type, while a data frame can hold multiple data types. Matrices also have a set number of row and columns while we can add rows and columns to the data frame. 
 
 10. Create a function with an if/else statement. Your function should determine whether a test score is a passing grade of 50 or above (TRUE or FALSE). You will need to choose either the `if` and `else` statements or the `ifelse` statement. Hint: Use `print`, not `return`. The name of your function should be informative.
 
@@ -63,8 +79,18 @@ This exercise accompanies the lessons in Environmental Data Analytics on coding 
 
 ```{r}
 
+pass_trueorfalse<- function(x) {
+  ifelse(x>50, print(TRUE), print(FALSE)) #if x(a students score), is 50 or over this function will print TRUE, if not it will print FALSE
+  
+}
+
+test <- pass_trueorfalse(51) #testing if the function works, this should return "TRUE"
+
+studentpass_trueorfalse <- pass_trueorfalse(testresults$`Test Score`) #Passing the students test scores through the function
+studentpass_trueorfalse #printing the results, 
+
 ```
 
 12. QUESTION: Which option of `if` and `else` vs. `ifelse` worked? Why?
 
-> Answer: 
+> Answer: I used `ifelse` to divide scores into two categories, those 50 and greater and those less than 50. If the score is 50 and greater the function prints "TRUE". For any other input the function prints "FALSE".
