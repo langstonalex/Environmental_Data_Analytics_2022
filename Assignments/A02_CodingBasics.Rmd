@@ -61,7 +61,8 @@ mean_sequencebyfour>median_sequencebyfour #Checking if the mean is greater than 
 ```{r}
 students <- c('Lorelai', 'Rory', 'Lane', 'Luke') #character vector
 scores <- c(84, 98, 51, 48) # double vector
-pass<- c(TRUE, TRUE, TRUE, FALSE) #logical vector
+pass<- c(TRUE, TRUE, TRUE, FALSE)#logical vector
+class(pass)
 
 testresults <-data.frame(students, scores, pass) #combining vectors into a df
 
@@ -80,7 +81,7 @@ colnames(testresults) <- c("Student Name", "Test Score", "Did They Pass?") #rena
 ```{r}
 
 pass_trueorfalse<- function(x) {
-  ifelse(x>50, print(TRUE), print(FALSE)) #if x(a students score), is 50 or over this function will print TRUE, if not it will print FALSE
+  ifelse(x>=50, print(TRUE), print(FALSE)) #if x(a students score), is 50 or over this function will print TRUE, if not it will print FALSE
   
 }
 
