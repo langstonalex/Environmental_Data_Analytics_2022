@@ -1,6 +1,6 @@
 ---
 title: "Assignment 4: Data Wrangling"
-author: "Student Name"
+author: "Langston Alexander"
 output: pdf_document
 geometry: margin=2.54cm
 ---
@@ -24,9 +24,32 @@ The completed exercise is due on Monday, Feb 7 @ 7:00pm.
 2. Explore the dimensions, column names, and structure of the datasets. 
 
 ```{r, message = FALSE}
-#1
+#1 
+library(tidyverse)
+library(lubridate)
+
+O3_2018<- read.csv("C:/Users/lwa8/Documents/R/ENV872/Environmental_Data_Analytics_2022/Data/Raw/EPAair_O3_NC2018_raw.csv", stringsAsFactors = TRUE)
+O3_2019<- read.csv("C:/Users/lwa8/Documents/R/ENV872/Environmental_Data_Analytics_2022/Data/Raw/EPAair_O3_NC2019_raw.csv", stringsAsFactors = TRUE)
+PM25_2018 <- read.csv("C:/Users/lwa8/Documents/R/ENV872/Environmental_Data_Analytics_2022/Data/Raw/EPAair_PM25_NC2018_raw.csv", stringsAsFactors = TRUE)
+PM25_2019 <-read.csv("C:/Users/lwa8/Documents/R/ENV872/Environmental_Data_Analytics_2022/Data/Raw/EPAair_PM25_NC2019_raw.csv", stringsAsFactors = TRUE)
 
 #2
+
+dim(O3_2018)
+dim(O3_2019)
+dim(PM25_2018)
+dim(PM25_2019)
+
+colnames(O3_2018)
+colnames(O3_2019)
+colnames(PM25_2018)
+colnames(PM25_2019)
+
+str(O3_2018)
+str(O3_2019)
+str(PM25_2018)
+str(PM25_2019)
+
 ```
 
 ## Wrangle individual datasets to create processed files.
@@ -38,12 +61,29 @@ The completed exercise is due on Monday, Feb 7 @ 7:00pm.
 ```{r}
 #3
 
+O3_2018$Date <- mdy(O3_2018$Date)
+O3_2019$Date <- mdy(O3_2019$Date)
+PM25_2018$Date <- mdy(PM25_2018$Date)
+PM25_2019$Date <- mdy(PM25_2019$Date)
+
 #4
+
+O3_2018_processed <- select(O3_2018, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+O3_2019_processed <- select(O3_2019, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+PM25_2018_processed <- select(PM25_2018, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+PM25_2019_processed <- select(PM25_2019, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
 
 #5
 
-#6
+PM25_2018_processed$AQS_PARAMETER_DESC <- "PM2.5"
+PM25_2019_processed$AQS_PARAMETER_DESC <- "PM2.5"
 
+#6
+#For some reason I can't get the shortened file paths to work, so I've used the local file paths here
+write.csv(O3_2018_processed, row.names = FALSE, file = "C:/Users/lwa8/Documents/R/ENV872/Environmental_Data_Analytics_2022/Data/Processed/EPAair_O3_NC2018_processed.csv")
+write.csv(O3_2019_processed, row.names = FALSE, file = "C:/Users/lwa8/Documents/R/ENV872/Environmental_Data_Analytics_2022/Data/Processed/EPAair_O3_NC2019_processed.csv")
+write.csv(PM25_2018_processed, row.names = FALSE, file = "C:/Users/lwa8/Documents/R/ENV872/Environmental_Data_Analytics_2022/Data/Processed/EPAair_PM25_NC2018_processed.csv")
+write.csv(PM25_2019_processed, row.names = FALSE, file = "C:/Users/lwa8/Documents/R/ENV872/Environmental_Data_Analytics_2022/Data/Processed/EPAair_PM25_NC2019_processed.csv")
 ```
 
 
@@ -63,13 +103,31 @@ The completed exercise is due on Monday, Feb 7 @ 7:00pm.
 ```{r}
 #7
 
+O3_PM25_Pollution_Data <- rbind(O3_2018_processed, O3_2019_processed, PM25_2018_processed, PM25_2019_processed)
+
 #8
+
+O3_PM25_Pollution_Data_Processed<-  O3_PM25_Pollution_Data %>%
+  filter(Site.Name %in% c("Linville Falls", "Durham Armory", "Leggett", "Hattie Avenue", "Clemmons Middle", "Mendenhall School", "Frying Pan Mountain", "West Johnston Co.", "Garinger High School", "Castle Hayne", "Pitt Agri. Center", "Bryson City", "Millbrook School")) %>%
+  group_by(Date, Site.Name, AQS_PARAMETER_DESC, COUNTY) %>%
+  summarise(meanAQI = mean(DAILY_AQI_VALUE),
+            meanlat = mean(SITE_LATITUDE),
+            meanlong = mean(SITE_LONGITUDE)) %>%
+    mutate (Month = month(Date), Year = year(Date))
 
 #9
 
+O3_PM25_Pollution_Data_Processed_Spread <- pivot_wider(O3_PM25_Pollution_Data_Processed, names_from = AQS_PARAMETER_DESC, values_from = meanAQI)
+
+
 #10
 
+dim(O3_PM25_Pollution_Data_Processed_Spread)
+
 #11
+
+write.csv(O3_PM25_Pollution_Data_Processed_Spread, row.names = FALSE, file = "C:/Users/lwa8/Documents/R/ENV872/Environmental_Data_Analytics_2022/Data/Processed/EPAair_O3_PM25_NC2122_Processed.csv")
+
 
 ```
 
@@ -85,11 +143,17 @@ The completed exercise is due on Monday, Feb 7 @ 7:00pm.
 ```{r}
 #12(a,b)
 
+EPA_Air_Summary <- O3_PM25_Pollution_Data_Processed_Spread %>%
+  group_by(Site.Name, Month, Year) %>%
+  filter(!is.na(Ozone) & !is.na(PM2.5)) %>%
+  summarise(Ozone_Mean = mean(Ozone),
+            PM25_Mean = mean(PM2.5))
+
 
 #13
 
+dim(EPA_Air_Summary)
+
 ```
 
-14. Why did we use the function `drop_na` rather than `na.omit`?
 
-> Answer: 
