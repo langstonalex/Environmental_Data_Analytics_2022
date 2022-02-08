@@ -10,7 +10,7 @@ The dataset contains data from air quality monitoring of PM2.5 and ozone in Nort
 
 Data were collected using the Doanload Daily Data tool (https://www.epa.gov/outdoor-air-quality-data/download-daily-data).
 The following selections were made: 
-* PM2.5 and Ozone (Pollurant)
+* PM2.5 and Ozone (Pollutant)
 * 2018 and 2019 (Year)
 * North Carolina (Geographic Area)
 * Download CSV (spreadsheet)
