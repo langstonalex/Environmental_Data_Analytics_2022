@@ -20,7 +20,7 @@ Effective data visualization depends on purposeful choices about graph types. Th
 
 ```{r, message = FALSE, warning = FALSE}
 getwd()
-library(tidyverse)
+library(tidyverse) 
 #install.packages("ggridges")
 library(ggridges)
 
@@ -87,7 +87,6 @@ print(O3plot)
 
 # Fix this code
 O3plot2 <- ggplot(EPAair) +
-  #geom_point(aes(x = Date, y = Ozone, color = "blue"))
   geom_point(aes(x = Date, y = Ozone), color = "blue")
 print(O3plot2)
 
