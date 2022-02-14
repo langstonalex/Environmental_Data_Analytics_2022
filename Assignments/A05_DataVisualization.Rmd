@@ -31,15 +31,14 @@ the processed data file for the Niwot Ridge litter dataset (use the [`NEON_NIWO_
 
 2. Make sure R is reading dates as date format; if not change the format to date.
 
-```{r}
+```{r, message=FALSE}
 #1 
-getwd()
 library(cowplot)
 library(tidyverse)
-
-peter_paulLakes <-read.csv("./Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv", 
+library(wesanderson)
+peter_paulLakes <-read.csv("C:/Users/lwa8/Documents/R/ENV872/Environmental_Data_Analytics_2022/Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv", 
                            stringsAsFactors = TRUE)
-niwot_litter <- read.csv("./Data/Processed/NEON_NIWO_Litter_mass_trap_Processed.csv", 
+niwot_litter <- read.csv("C:/Users/lwa8/Documents/R/ENV872/Environmental_Data_Analytics_2022/Data/Processed/NEON_NIWO_Litter_mass_trap_Processed.csv", 
                          stringsAsFactors = TRUE)
 
 #2 
@@ -57,7 +56,7 @@ niwot_litter$collectDate <- as.Date(niwot_litter$collectDate,
 ## Define your theme
 3. Build a theme and set it as your default theme.
 
-```{r}
+```{r, warning=FALSE}
 #3
 
 mytheme <- theme_light(base_size = 10)+
@@ -73,7 +72,7 @@ For numbers 4-7, create ggplot graphs and adjust aesthetics to follow best pract
 
 4. [NTL-LTER] Plot total phosphorus (`tp_ug`) by phosphate (`po4`), with separate aesthetics for Peter and Paul lakes. Add a line of best fit and color it black. Adjust your axes to hide extreme values (hint: change the limits using `xlim()` and `ylim()`).
 
-```{r}
+```{r, warning=FALSE}
 #4
 
 ggplot(peter_paulLakes, 
@@ -92,7 +91,7 @@ ggplot(peter_paulLakes,
 
 5. [NTL-LTER] Make three separate boxplots of (a) temperature, (b) TP, and (c) TN, with month as the x axis and lake as a color aesthetic. Then, create a cowplot that combines the three graphs. Make sure that only one legend is present and that graph axes are aligned.
 
-```{r}
+```{r, warning=FALSE}
 #5
 boxplot_base <- ggplot(peter_paulLakes)+
   xlab("Month")+
@@ -166,6 +165,9 @@ legend <- get_legend(
   temp +
     theme(legend.position = "right"))
 
+```
+
+```{r, fig.width = 10, fig.height = 10}
 plot_grid(temp, phos, nitro, legend, 
           ncol = 1, axis = c("l"), align = "v")
 
@@ -181,7 +183,7 @@ Question: What do you observe about the variables of interest over seasons and b
 
 7. [Niwot Ridge] Now, plot the same plot but with NLCD classes separated into three facets rather than separated by color. 
 
-```{r}
+```{r, warning=FALSE}
 #6
 ggplot(subset(niwot_litter, functionalGroup == "Needles"), 
        aes(x = collectDate, y = dryMass, color = nlcdClass))+
@@ -190,6 +192,7 @@ ggplot(subset(niwot_litter, functionalGroup == "Needles"),
        y = " Dry Mass (g)", 
        x = "Collection Date", 
        color = "Class")+
+  ylim(0,30)+
   scale_color_manual(values = wes_palette("GrandBudapest1", 3))+
   theme(axis.text.x = element_text(angle = 45))
   
@@ -203,6 +206,7 @@ ggplot(subset(niwot_litter, functionalGroup == "Needles"),
        y = " Dry Mass (g)", 
        x = "Collection Date", 
        color = "Class")+
+  ylim(0,30)+
   scale_color_manual(labels = c("Evergreen Forest", "Herbaceous Grassland", "Scrub Shrub"),
                      values = wes_palette("GrandBudapest1", 3))+
   theme(axis.text.x = element_text(angle = 90),
