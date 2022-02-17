@@ -60,6 +60,10 @@ Exercise: build your own scatterplots of PeterPaul.chem.nutrients
 # Color your points by year, and facet by lake in two rows.
 # Change the ylab name
 
+ggplot(subset(PeterPaul.chem.nutrients, depth == 0), aes(x=daynum, y=temperature_C, color = year4))+
+  geom_point()+
+  facet_wrap(vars(lakename))+
+  ylab(expression(paste("Temperature (C", degree, ")")))
 
 #2. 
 # Plot temperature by date. Color your points by depth.
@@ -67,7 +71,12 @@ Exercise: build your own scatterplots of PeterPaul.chem.nutrients
 # Change the color palette to magma and play with direction (+- 1), which one makes more sense?
 # Change x axis to include marker/labels every 5 years
 
-
+ggplot(PeterPaul.chem.nutrients, aes(x=sampledate, y=temperature_C, color = depth))+
+  geom_point(size = 0.5)+
+  scale_color_viridis(option = "magma", direction = -1)+
+  scale_x_date(date_breaks = "5 years", date_labels = '%Y')
+  
+  
 
 
 ```
@@ -82,7 +91,9 @@ Exercise: Plot relationships between air quality measurements
 # Make the points 50 % transparent
 # Add a line of best fit for the linear regression of these variables.
 
-
+ggplot(EPAair, aes(x=PM2.5, y=Ozone, color = meanLat))+
+  geom_point(alpha = 0.5)+
+  geom_smooth(method = 'lm', color='Red')
 
 
 ```
@@ -96,6 +107,9 @@ Exercise: Plot distributions of AQI values for EPAair.
 # 4. 
 # Create several types of plots depicting PM2.5, divided by year. 
 # Choose which plot displays the data best and justify your choice. 
+
+ggplot(EPAair, aes(x=PM2.5, y=as.factor(Year)))+
+  geom_density_ridges(aes(fill = as.factor(Year)), alpha = 0.5)
 
 
 

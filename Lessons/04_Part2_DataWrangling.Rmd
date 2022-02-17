@@ -154,6 +154,7 @@ However, there are 20 months in this dataset, so importing all these files indiv
 LitterFiles = list.files(path = "./Data/Raw/NIWO_Litter/", pattern="*.csv", full.names=TRUE)
 LitterFiles
 
+library(plyr)
 Litter <- LitterFiles %>%
   ldply(read.csv)
 ```
