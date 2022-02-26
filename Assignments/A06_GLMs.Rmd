@@ -25,15 +25,17 @@ The completed exercise is due on Monday, February 28 at 7:00 pm.
 
 2. Build a ggplot theme and set it as your default theme.
 
-```{r setup}
+```{r setup, message=FALSE}
 #1
 library(tidyverse)
-library(agricolae)
 library(corrplot)
 library(RColorBrewer)
 library(lubridate)
+library(agricolae)
 
-LakeData <- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv", stringsAsFactors = TRUE)
+LakeData <- read.csv(
+  "C:/Users/lwa8/Documents/R/ENV872/Environmental_Data_Analytics_2022/Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv",
+                     stringsAsFactors = TRUE)
 LakeData$sampledate <- as.Date(LakeData$sampledate, format = "%m/%d/%y")
 
 #2
@@ -59,7 +61,7 @@ Ha: Mean lake temperature in July changes with depth across all lakes.
 
 5. Visualize the relationship among the two continuous variables with a scatter plot of temperature by depth. Add a smoothed line showing the linear model, and limit temperature values from 0 to 35 °C. Make this plot look pretty and easy to read.
 
-```{r scatterplot}
+```{r scatterplot, warning=FALSE, message=FALSE}
 #4
 processedLakeData <- 
   LakeData %>%
@@ -151,9 +153,12 @@ plot(LakeTempAnova)
 
 ggplot(processedLakeData, aes(x = depth, y = temperature_C, color = lakename))+
   geom_point(alpha = 0.5)+
-  labs(y = "Temperature (C)", x = "Depth (M)", color = "Lake Name", title = "Temperature by Depth in July")+
+  labs(y = "Temperature (C)", x = "Depth (M)", 
+       color = "Lake Name", 
+       title = "Temperature by Depth in July")+
   ylim(0,35)+
-  scale_color_brewer(palette = "Set1")
+  scale_color_brewer(palette = "Set1")+
+  geom_smooth(aes(color = lakename,), method = "lm", se = F)
 
 ```
 
