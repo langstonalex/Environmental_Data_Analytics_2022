@@ -94,7 +94,7 @@ print(Ozone.plot)
 
 Write a sentence or two about the results of this test. Include both the results of the test and an interpretation that puts the findings in context of the research question.
 
-> 
+> There is strong evidence to suggest that the mean ozone level is below 50 (t = -57.98, df = 6829, p-value < 2.2e-16)
 
 ### Two-sample t-test
 
@@ -152,6 +152,26 @@ Create three plots, each with appropriately formatted axes and legends. Choose a
 ```{r}
 #Exercise 2:
 
+ 
+
+#1. 
+ggplot(EPAair, aes(x = Ozone, fill = as.factor(Year)))+
+  geom_density(alpha = 0.5)+
+  scale_fill_brewer(palette = "Accent")+
+  labs(title = "Ozone by Year", x = "Ozone AQI Value", y = "Density", fill = "Year")
+#2
+ggplot(EPAair, aes(x = Ozone, y = as.factor(Year)))+
+  geom_boxplot()+
+  labs(title = "Ozone By Year", y = "Year")+
+  stat_summary(geom = "text", fun = max, hjust = -1, size = 3.5, label = c("a", "b"))
+#3
+ggplot(EPAair, aes(x = Ozone, y = as.factor(Year), color = as.factor(Year)))+
+  geom_violin(draw_quantiles = c(0.5))+
+  labs(title = "Ozone By Year", y = "Year")+
+  stat_summary(geom = "text", fun = max, hjust = -1, size = 3.5, label = c("a", "b"))+
+  theme(legend.position = "none")
+  
+
 
 ```
 
@@ -164,6 +184,8 @@ For the NTL-LTER dataset, can we predict PM2.5 from Ozone?
 ```{r}
 
 #Exercise 3: Run a linear regression PM2.5 by Ozone. Find the p-value and R-squared value. 
+
+
 
 
 
