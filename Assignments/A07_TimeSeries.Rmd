@@ -1,6 +1,6 @@
 ---
 title: "Assignment 7: Time Series Analysis"
-author: "Student Name"
+author: "Langston ALexander"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -29,6 +29,17 @@ The completed exercise is due on Monday, March 14 at 7:00 pm.
 
 ```{r}
 #1
+getwd()
+
+library(tidyverse)
+library(lubridate)
+library(zoo)
+library(trend)
+
+mytheme <- theme_gray(base_size = 14) +
+theme(axis.text = element_text(color = "black"),
+legend.position = "right")
+theme_set(mytheme)
 
 ```
 
@@ -38,6 +49,15 @@ The completed exercise is due on Monday, March 14 at 7:00 pm.
 ```{r, message = FALSE}
 #2
 
+OzoneFiles = list.files(path = "./Data/Raw/Ozone_TimeSeries/", pattern = "*.csv", full.names = TRUE)
+OzoneFiles
+
+library(plyr)
+
+GaringerOzone2 <- OzoneFiles %>%
+  ldply(read.csv)
+
+GaringerOzone$Date <- as.factor(GaringerOzone$Date)
 
 ```
 
@@ -54,12 +74,29 @@ The completed exercise is due on Monday, March 14 at 7:00 pm.
 ```{r}
 # 3
 
+GaringerOzone$Date <-as.Date(GaringerOzone$Date, format = "%m/%d/%Y")
+
 # 4
+
+GaringerOzoneSelect <- select(GaringerOzone, c(Date, Daily.Max.8.hour.Ozone.Concentration, DAILY_AQI_VALUE))
+
+GaringerOzoneSelect$Date <- as.character(GaringerOzoneSelect$Date)
 
 # 5
 
+Days <- as.data.frame(seq(from = as.Date("2010-01-01"), to = as.Date("2019-12-31"), by = 1))
+
+names(Days) <- "Date"
+
+Days$Date <- as.character(Days$Date)
+
 # 6
 
+GaringerOzone <- left_join(Days, GaringerOzoneSelect, by = "Date")
+
+GaringerOzone$Date <- as.Date(GaringerOzone$Date)
+
+names(GaringerOzone)[2] <- "Ozone_Conc"
 ```
 
 ## Visualize
@@ -69,9 +106,14 @@ The completed exercise is due on Monday, March 14 at 7:00 pm.
 ```{r}
 #7
 
+ggplot(GaringerOzone, aes(x = Date, y = Ozone_Conc))+
+  geom_line()+
+  geom_smooth(method = "lm")+
+  labs(title = "Ozone Concentration at Garinger HS, NC by Date ", y = "Ozone Concentration (ppm)")
+
 ```
 
->Answer: 
+>Answer: Visually, the line plot above suggests that ozone levels at Garinger Highschool have slightly declined on average in the past 10 years. We see this trend mirrored in the smoothed linear trend line of the data. 
 
 ## Time Series Analysis
 
@@ -81,16 +123,25 @@ Study question: Have ozone concentrations changed over the 2010s at this station
 
 ```{r}
 #8
-
+GaringerOzone <- mutate(GaringerOzone, Ozone_Conc = zoo::na.approx(Ozone_Conc))
 ```
 
-> Answer:  
+> Answer:  For the most part, the short-term trends thoughout the data are increasing or decreasing linearly. The missing data point should fit into this short-term linear trend. Neither a piecewise constant nor a spline interpolation would replace missing data along a linear trend. A piecewise constant would replece the missing data by making them equal to their nearest neighbor, while the spline interpolation would use quadratic function to interpolate. 
 
 
 9. Create a new data frame called `GaringerOzone.monthly` that contains aggregated data: mean ozone concentrations for each month. In your pipe, you will need to first add columns for year and month to form the groupings. In a separate line of code, create a new Date column with each month-year combination being set as the first day of the month (this is for graphing purposes only)
 
 ```{r}
 #9
+#group by year, then month, create new column of monthly average, THERE SHOULD BE NO DAILY DATA
+GaringerOzone.monthly <- GaringerOzone %>%
+  mutate(month = month(Date)) %>%
+  mutate(year = year(Date)) %>%
+  group_by(year, month) %>%
+  dplyr::summarize(Ozone_Avg = mean(Ozone_Conc)) %>%
+  as.data.frame()
+
+GaringerOzone.monthly <- 
 
 ```
 
