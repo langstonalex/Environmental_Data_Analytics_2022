@@ -36,7 +36,7 @@ library(agricolae)
 LakeData <- read.csv(
   "C:/Users/lwa8/Documents/R/ENV872/Environmental_Data_Analytics_2022/Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv",
                      stringsAsFactors = TRUE)
-LakeData$sampledate <- as.Date(LakeData$sampledate, format = "%m/%d/%y")
+as.Date(LakeData$sampledate, format = "%m/%d/%y")
 
 #2
 mytheme <- theme_gray(base_size = 14) +
