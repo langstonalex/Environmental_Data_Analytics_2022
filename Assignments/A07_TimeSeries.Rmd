@@ -5,6 +5,7 @@ output:
   pdf_document: default
   html_document:
     df_print: paged
+  word_document: default
 geometry: margin=2.54cm
 editor_options:
   chunk_output_type: console
@@ -54,7 +55,7 @@ theme_set(mytheme)
 #2
 
 OzoneFiles = list.files(
-  path = "./Data/Raw/Ozone_TimeSeries/", pattern = "*.csv", full.names = TRUE)
+  path = "C:/Users/lwa8/Documents/R/ENV872/Environmental_Data_Analytics_2022/Data/Raw/Ozone_TimeSeries/", pattern = "*.csv", full.names = TRUE)
 OzoneFiles
 
 
