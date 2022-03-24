@@ -117,19 +117,20 @@ mapView(counties_sf, zcol = "AWATER")
 
 ```{r read HUCs shapefile}
 #Read the shapefile into an sf dataframe named "huc8_sf"
-
+huc8_sf <- st_read('./Data/Spatial/NCHUC8.shp')
 
 #Reveal the columns
-
+colnames(huc8_sf)
 
 #Check the CRS
-
+st_crs(huc8_sf)
 
 #Examine some records
-
+head(huc8_sf)
 
 #View the data as a map, colored by the acreage in each
 
+mapview(huc8_sf, zcol = "ACRES")
 
 ```
 
@@ -140,9 +141,22 @@ mapView(counties_sf, zcol = "AWATER")
 ```{r Select the Upper Neuse HUC 8}
 #Read the shapefile into an sf dataframe
 
-
+huc8_sf2 <- st_read('./Data/Spatial/NCHUC8.shp') %>%
+  filter(SUBBASIN == "Upper Neuse")
 
 #Create a map
+
+mapview(huc8_sf2)
+
+mapview(huc8_sf)
+
+LabMap = mapview(huc8_sf,
+                 col.regions = 'orange')
+ 
+
+LabMap +  mapview(huc8_sf2,
+                 col.regions = 'purple',
+                 alpha = 1)
 
 
 ```
@@ -185,6 +199,8 @@ nc_powerplants_sf <- nc_powerplants_sf %>%
 # Examine counts by fuel type
 ggplot(nc_powerplants_sf) + 
   geom_sf(aes(color = PRIM_FUEL)) 
+
+mapview(nc_powerplants_sf)
 ```
 
 # 3. WORKING WITH SPATIAL DATA
@@ -239,6 +255,11 @@ ggplot() +
 
 ```{r}
 #Compute HUC8 wind energy
+windData <- read.csv('https://raw.githubusercontent.com/ENV859/EnviroAtlasData/main/Wind_Energy.csv',
+                     colClasses = c('HUC_12' = 'factor')) %>%
+  mutate(HUC_8 = substr(HUC_12, 1, 8)) %>%
+  group_by(HUC_8) %>%
+  dplyr :: summarize(windpower = sum(AvgWindEnergy))
 
 
 
@@ -274,17 +295,21 @@ mapview(state_sf)
 
 ```{r Aggregate the HUC data on an attribute, saving as huc2_sf}
 #List the unique values in the DWQ_Basin field
-
+huc2_sf <- huc8_sf %>%
+  group_by("DWQ_Basin")
+  
 
 
 
 #Summarize on DWQ Basin value
 
-
+summarize(ACRES = sum(ACRES), SQ_MILES = sum(SQ_MILES))
 
 
   
 #Map the data
+
+mapview(huc2_sf)
 
 ```
 
@@ -327,6 +352,7 @@ In the exercise below, we'll subset one of the HUCs (Upper Neuese), and explore 
 #Clip the HUC2 data set by the NC State boundary dataset
 neuse_sf <- huc2_utm %>% 
   filter(DWQ_Basin == "Neuse")
+
 
 #Start building a map object
 myMap = mapview(neuse_sf, 
