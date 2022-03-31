@@ -19,7 +19,7 @@ getwd()
 library(tidyverse)
 library(lubridate)
 
-#install.packages("rvest")
+install.packages("rvest")
 library(rvest)
 
 # Set theme
@@ -135,14 +135,16 @@ max_withdrawals
 Now that we've scraped the data we want into our coding environment, the next step is to wrangle these data into formats we can work with more easily, i.e. a dataframe. Here, we emply the techniques we've learned earlier in this class to do this and then plot the data. 
 ```{r create.dataframe.from.scrapings}
 #Create a dataframe of withdrawals
-df_withdrawals <- data.frame("Month" = rep(1:12),
+month2 <- c(1,7,2,8,3,9,4,10,5,11,6,12)
+df_withdrawals <- data.frame("Month" = month2,
                              "Year" = rep(2000,12),
                              "Avg_Withdrawals_mgd" = as.numeric(avg_withdrawals),
                              "Max_Withdrawals_mgd" = as.numeric(max_withdrawals))
+df_withdrawals <- arrange(df_withdrawals, Month)
 
 #Modify the dataframe to include the facility name and type as well as the date (as date object)
 df_withdrawals <- df_withdrawals %>% 
-  mutate(Registrant = !!the_registrant,
+  mutate(Registrant = !!the_registrant, #what does the double exclamation do?
          Facility_name = !!the_facility_name,
          Facility_type = !!the_facility_type,
          Date = my(paste(Month,"-",Year)))
@@ -170,7 +172,7 @@ This begins by setting the parameters of the page we'll be scraping to variables
 #Construct the scraping web address, i.e. its URL
 the_base_url <- 'https://www.ncwater.org/WUDC/app/WWATR/report/view'
 the_facility <- '0004-0001'
-the_year <- 2015
+the_year <- 2018
 the_scrape_url <- paste0(the_base_url, '/', the_facility, '/', the_year)
 print(the_scrape_url)
 
@@ -190,9 +192,10 @@ the_facility_type <- the_website %>% html_nodes(the_facility_id_tag) %>% html_te
 the_withdrawals <- the_website %>% html_nodes(the_data_tag) %>% html_text()
 
 #Construct a dataframe from the scraped data
-df_withdrawals <- data.frame("Month" = rep(1:12),
+df_withdrawals <- data.frame("Month" = month2,
                              "Year" = rep(the_year,12),
                              "Avg_Withdrawals_mgd" = as.numeric(the_withdrawals)) %>% 
+  arrange(Month) %>%
   mutate(Registrant = !!the_registrant,
          Facility_name = !!the_facility_name,
          Facility_type = !!the_facility_type,
@@ -202,7 +205,7 @@ df_withdrawals <- data.frame("Month" = rep(1:12),
 ggplot(df_withdrawals,aes(x=Date,y=Avg_Withdrawals_mgd)) + 
   geom_line() + 
   geom_smooth(method="loess",se=FALSE) +
-  labs(title = paste("2020 Water usage data for",the_registrant),
+  labs(title = paste("2015 Water usage data for",the_registrant),
        subtitle = the_facility_name,
        y="Withdrawal (mgd)",
        x="Date")
@@ -236,13 +239,15 @@ scrape.it <- function(the_year, the_facility){
   avg_withdrawals <- the_website %>% html_nodes(the_data_tag) %>% html_text()
   
   #Convert to a dataframe
-  df_withdrawals <- data.frame("Month" = rep(1:12),
-                               "Year" = rep(the_year,12),
-                               "Avg_Withdrawals_mgd" = as.numeric(avg_withdrawals)) %>% 
-    mutate(Registrant = !!the_registrant,
-           Facility_name = !!the_facility_name,
-           Facility_type = !!the_facility_type,
-           Date = my(paste(Month,"-",Year)))
+  
+  df_withdrawals <- data.frame("Month" = month2,
+                             "Year" = rep(the_year,12),
+                             "Avg_Withdrawals_mgd" = as.numeric(avg_withdrawals)) %>% #the_withdrawals vs avg_withdrawals
+  arrange(Month) %>%
+  mutate(Registrant = !!the_registrant,
+         Facility_name = !!the_facility_name,
+         Facility_type = !!the_facility_type,
+         Date = my(paste(Month,"-",Year)))
   
   #Pause for a moment - scraping etiquette
   #Sys.sleep(1) #uncomment this if you are doing bulk scraping!
@@ -281,7 +286,7 @@ the_df <- bind_rows(the_dfs)
 ggplot(the_df,aes(x=Date,y=Avg_Withdrawals_mgd)) + 
   geom_line() + 
   geom_smooth(method="loess",se=FALSE) +
-  labs(title = paste("2020 Water usage data for",the_registrant),
+  labs(title = paste("2018-2020 Water usage data for",the_registrant),
        subtitle = the_facility_name,
        y="Withdrawal (mgd)",
        x="Date")
@@ -359,12 +364,7 @@ the_df <- cross2(the_years,the_facilities) %>%
   bind_rows()
 
 #Plot
-ggplot(the_df,aes(x=Date,y=Avg_Withdrawals_mgd,color=Facility_name)) + 
-  #geom_line() + 
-  geom_smooth(method="loess",se=FALSE) +
-  labs(title = "Water usage data",
-       y="Withdrawal (mgd)",
-       x="Date")
+
 
 ```
 
