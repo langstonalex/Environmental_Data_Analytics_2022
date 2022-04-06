@@ -4,15 +4,17 @@ library(shinythemes)
 library(tidyverse)
 
 #### Load data ----
-nutrient_data <- read_csv("Data/NTL-LTER_Lake_Nutrients_PeterPaul_Processed.csv")
-nutrient_data$sampledate <- as.Date(nutrient_data$sampledate, format = "%Y-%m-%d")
+#Loaded the raw data with data from all lakes in the dataset rather than just Peter and Paul.
+nutrient_data <- read_csv("./Data/NTL-LTER_Lake_Nutrients_Raw.csv")
+nutrient_data$sampledate <- as.Date(nutrient_data$sampledate, format = "%m/%d/%y")
 nutrient_data <- nutrient_data %>%
   filter(depth_id > 0) %>%
   select(lakename, sampledate:po4)
 
 #### Define UI ----
-ui <- fluidPage(theme = shinytheme("yeti"),
-  titlePanel("Nutrients in Peter Lake and Paul Lake"),
+#Changed theme to superhero and changed name of title panel
+ui <- fluidPage(theme = shinytheme("superhero"),
+  titlePanel("Nutrients in Northern Wisconisn Lakes"),
   sidebarLayout(
     sidebarPanel(
       
@@ -29,9 +31,14 @@ ui <- fluidPage(theme = shinytheme("yeti"),
                          selected = c(1, 7)),
       
       # Select lake
+      #Added all the possible lakes to the checkbox field
       checkboxGroupInput(inputId = "shape",
                          label = "Lake",
-                         choices = c("Peter Lake", "Paul Lake"),
+                         choices = c("Peter Lake", "Paul Lake", "East Long Lake", "West Long Lake", "Tuesday Lake", "Central Long Lake", "Hummingbird Lake" ,  "Crampton Lake"  ,    "Brown Lake"  ,       "Bergner Lake"   ,   
+                                     "Bolger Bog"   ,      "Bog Pot"     ,       "Cranberry Bog"     , "Eds Bog"     ,       "Forest Service Bog",
+                                      "Inkpot Lake" ,       "Kickapoo Lake"  ,    "Morris Lake"    ,    "North Gate Bog"  ,   "Plum Lake"  ,       
+                                      "Raspberry Lake"  ,   "Reddington Lake"  ,  "Roach Lake"   ,      "Tenderfoot Lake"  ,  "Ward Lake"  ,       
+                                     "Tender Bog"),
                          selected = "Peter Lake"),
 
       # Select date range to be plotted
@@ -59,16 +66,18 @@ server <- function(input, output) {
      })
     
     # Create a ggplot object for the type of plot you have defined in the UI  
+     #Reconfigured the plot code to add more shapes to match more lakes
+     #Changed from fill to color and changed the scheme to viridis
        output$scatterplot <- renderPlot({
         ggplot(filtered_nutrient_data(), 
                aes_string(x = "sampledate", y = input$y, 
-                          fill = "depth_id", shape = "lakename")) +
+                          color = "depth_id", shape = "lakename")) +
           geom_point(alpha = 0.8, size = 2) +
           theme_classic(base_size = 14) +
-          scale_shape_manual(values = c(21, 24)) +
+          scale_shape_manual(values = c(1:26)) +
           labs(x = "Date", y = expression(Concentration ~ (mu*g / L)), shape = "Lake", fill = "Depth ID") +
-          scale_fill_distiller(palette = "YlOrBr", guide = "colorbar", direction = 1)
-          #scale_fill_viridis_c(option = "viridis", begin = 0, end = 0.8, direction = -1)
+          #scale_color_distiller(palette = "YlOrBr", guide = "colorbar", direction = 1)
+          scale_color_viridis_c(option = "viridis", begin = 0, end = 0.8, direction = -1)
       })
        
     # Create a table that generates data for each point selected on the graph  

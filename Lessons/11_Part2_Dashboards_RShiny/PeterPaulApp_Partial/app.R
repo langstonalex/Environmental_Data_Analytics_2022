@@ -8,11 +8,11 @@ library(tidyverse)
 # Specify the date column as a date
 # Remove negative values for depth_id 
 # Include only lakename and sampledate through po4 columns
-nutrient_data <- 
-nutrient_data$sampledate <- as.Date()
-nutrient_data <-  %>%
-   %>%
-  
+nutrient_data <- read.csv('./Data/Processed/NTL-LTER_Lake_Nutrients_PeterPaul_Processed.csv')
+nutrient_data$sampledate <- as.Date(nutrient_data$sampledate)
+nutrient_data <- nutrient_data %>%
+  filter(depth_id >= 0) %>%
+  select(lakename, sampledate:po4)
 
 #### Define UI ----
 ui <- fluidPage(theme = shinytheme("yeti"),
